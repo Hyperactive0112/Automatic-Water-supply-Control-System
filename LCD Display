@@ -1,0 +1,22 @@
+lcd.clear();
+lcd.print(0, 0, "S-4, Water is comeing in few min");
+Blynk.notify("S-4, Water is comeing in few min");
+}
+else{}
+if(F4=1 && currentmillis - previousMillis >= in_delay)
+{
+digitalWrite(ST_1, LOW);
+digitalWrite(ST_2, LOW);
+digitalWrite(ST_3, LOW);
+digitalWrite(ST_4, HIGH);
+F1=1;
+F2=0;
+F3=0;
+F4=0;
+FR1=1;
+FR2=0;
+FR3=0;
+FR4=0;
+}
+else{}
+}
