@@ -1,0 +1,50 @@
+#include <ESP8266WiFi.h>
+const char *ssid = "Switchy"; // replace with your wifi ssid and wpa2 key
+const char *pass = "switchy@123";
+#define LED_BUILTIN 16
+#define SENSOR 2
+long curmils = 0;
+long premil = 0;
+int interval = 1000;
+boolean ledState = LOW;
+float calibrationFactor = 4.5;
+volatile byte pulseCount;
+byte pulse1Sec = 0;
+float flowRate;
+unsigned long flowMilliLitres;
+unsigned int totalMilliLitres;
+float flowLitres;
+float totalLitres;
+void IRAM_ATTR pulseCounter()
+{
+ pulseCount++;
+}
+void setup()
+{
+ Serial.begin(115200);
+ pinMode(LED_BUILTIN, OUTPUT);
+ pinMode(SENSOR, INPUT_PULLUP);
+ pulseCount = 0;
+ flowRate = 0.0;
+ flowMilliLitres = 0;
+ totalMilliLitres = 0;
+ premil = 0;
+ attachInterrupt(digitalPinToInterrupt(SENSOR), pulseCounter, FALLING);
+}
+void loop()
+{
+ curmils = millis();
+ if (curmils - premil > interval) 
+{
+ pulse1Sec = pulseCount;
+ pulseCount = 0;
+ flowRate = ((1000.0 / (millis() - premil)) * pulse1Sec) / calibrationFactor;
+ premil = millis();
+ flowMilliLitres = (flowRate / 60) * 1000;
+ flowLitres = (flowRate / 60);
+ totalMilliLitres += flowMilliLitres;
+ totalLitres += flowLitres;
+ Serial.print(totalLitres);
+ Serial.println("L");
+ }
+}
